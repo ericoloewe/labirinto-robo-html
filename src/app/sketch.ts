@@ -34,9 +34,9 @@ export async function createMaze(mazePath: string) {
 		}
 
 		// The sketch setup method 
-		p5.setup = () => {
+		p5.setup = () => {			
 			// Creating and positioning the canvas
-			const canvas = p5.createCanvas(500, 500);
+			const canvas = p5.createCanvas(maze.width * tileSize, maze.height * tileSize);
 			canvas.parent("canvasSection");
 
 			// Configuring the canvas
@@ -98,9 +98,13 @@ function createMazeOfFile(mazeFile: string) {
 
 class Maze {
 	grid: number[][];
+	height: number;
+	width: number;
 
 	constructor(grid: number[][]) {
 		this.grid = grid;
+		this.height = grid.length;
+		this.width = grid[0].length;
 	}
 
 }
