@@ -9,8 +9,10 @@ export default function Home() {
   useEffect(() => {
     // Client-side-only code
 
-    createMaze(maze).then(x => {
-      console.log("OK");
+    createMaze(maze).then(drawer => {
+      console.log("Carregado labirinto: ", drawer);
+
+      drawer.generateStepsAndDraw();
     });
   }, [maze]);
 

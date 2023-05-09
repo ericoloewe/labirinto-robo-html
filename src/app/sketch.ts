@@ -1,90 +1,105 @@
 // import P5 from 'p5';
 
+import { Maze } from './maze';
+import { P5Drawer } from './p5-drawer';
 import labirintos from './labirintos'
+import { Loteria } from './loteria';
+
+export type P5Type = import('p5');
+export type P5Image = import('p5').Image;
 
 export async function createMaze(mazePath: string) {
 	const { default: P5 } = await import("p5");
-
-	console.log(P5);
-
-	type P5Type = import('p5');
-	type P5Image = import('p5').Image;
-
-
-
-	const section = document.getElementById('canvasSection');
-
-	if (section != null)
-		section.innerHTML = '';
+	clearCanvasHtml();
 
 	const mazeFile = labirintos[mazePath] as string;
 
 	if (mazeFile == null)
 		throw new Error('Labirinto invalido');
 
-	const maze = createMazeOfFile(mazeFile);
-	const tileSize = 20;
-	const images = {} as { brick: P5Image, sand: P5Image };
+	const player = createMazeFromFile(mazeFile);
+	const drawer = new P5Drawer(null as any, player);
 
 	// Creating the sketch itself
 	const sketch = (p5: P5Type) => {
-		p5.preload = () => {
-			images.brick = p5.loadImage('brick.jpg');
-			images.sand = p5.loadImage('sand.jpg');
-		}
+		drawer.canvas = p5;
+
+		p5.preload = () => drawer.preload();
 
 		// The sketch setup method 
-		p5.setup = () => {			
+		p5.setup = () => {
+			const { maze } = player;
 			// Creating and positioning the canvas
-			const canvas = p5.createCanvas(maze.width * tileSize, maze.height * tileSize);
-			canvas.parent("canvasSection");
-
-			// Configuring the canvas
-			p5.background("white");
-
-			p5.stroke(0);
-			p5.strokeWeight(1);
+			drawer.prepare(maze.width, maze.height);
 
 			for (let i = 0; i < maze.grid.length; i++) {
 				for (let j = 0; j < maze.grid[i].length; j++) {
 					if (maze.grid[i][j] === 1) {
-						p5.image(images.brick, j * tileSize, i * tileSize, tileSize, tileSize);
+						drawer.drawBrick(j, i);
 					} else {
-						p5.image(images.sand, j * tileSize, i * tileSize, tileSize, tileSize);
+						drawer.drawSand(j, i);
 					}
 				}
 			}
-
-			// DEMO: Create three circles in the center of the canvas
-			console.log(labirintos);
 		};
+
+		let time = Date.now();
+		const waitTime = 500;
 
 		// The sketch draw method
 		p5.draw = () => {
-
+			if ((Date.now() - time) > waitTime) {
+				executeAction();
+				time = Date.now();
+			}
 		};
+
+		function executeAction() {
+			if (drawer.steps != null) {
+				const lastStep = drawer.steps[drawer.current - 1]
+				const currentStep = drawer.steps[drawer.current++];
+
+				drawer.drawPlayer(currentStep.x, currentStep.y);
+
+				if (lastStep != null)
+					drawer.restore(lastStep.x, lastStep.y);
+
+
+				if (currentStep == null)
+					alert('saiu');
+			}
+		}
 	};
 
 	new P5(sketch);
+
+	return drawer;
 }
 
-function createMazeOfFile(mazeFile: string) {
-	var lines = mazeFile.split('\n');
+function clearCanvasHtml() {
+	const section = document.getElementById('canvasSection');
 
-	var dimensao = lines[0].split(' ');
+	if (section != null)
+		section.innerHTML = '';
+}
 
-	var heigth = Number(dimensao[1]);
-	var width = Number(dimensao[2]);
+function createMazeFromFile(mazeFile: string) {
+	const lines = mazeFile.split('\n');
 
-	var posicao = lines[1].split(' ');
+	const dimensao = lines[0].split(' ');
 
-	var y = posicao[1];
-	var x = posicao[2];
+	const heigth = Number(dimensao[1]);
+	const width = Number(dimensao[2]);
 
-	var grid = [] as number[][];
+	const posicao = lines[1].split(' ');
+
+	const y = Number(posicao[1]);
+	const x = Number(posicao[2]);
+
+	const grid = [] as number[][];
 
 	for (let i = 0; i < heigth; i++) {
-		var line = lines[i + 3].split('');
+		const line = lines[i + 3].split('');
 
 		grid[i] = [];
 
@@ -93,18 +108,7 @@ function createMazeOfFile(mazeFile: string) {
 		}
 	}
 
-	return new Maze(grid);
+	return new Loteria(x, y, new Maze(grid));
 }
 
-class Maze {
-	grid: number[][];
-	height: number;
-	width: number;
 
-	constructor(grid: number[][]) {
-		this.grid = grid;
-		this.height = grid.length;
-		this.width = grid[0].length;
-	}
-
-}
