@@ -4,6 +4,10 @@ import { Maze } from './maze';
 import { P5Drawer } from './p5-drawer';
 import labirintos from './labirintos'
 import { Loteria } from './loteria';
+import { IPlayer } from './interfaces';
+import { C3PO } from './c3po';
+import { R2D2 } from './r2d2';
+import { Walle } from './walle';
 
 export type P5Type = import('p5');
 export type P5Image = import('p5').Image;
@@ -31,16 +35,7 @@ export async function createMaze(mazePath: string) {
 			const { maze } = player;
 			// Creating and positioning the canvas
 			drawer.prepare(maze.width, maze.height);
-
-			for (let i = 0; i < maze.grid.length; i++) {
-				for (let j = 0; j < maze.grid[i].length; j++) {
-					if (maze.grid[i][j] === 1) {
-						drawer.drawBrick(j, i);
-					} else {
-						drawer.drawSand(j, i);
-					}
-				}
-			}
+			drawer.drawMaze();
 		};
 
 		let time = Date.now();
@@ -64,7 +59,6 @@ export async function createMaze(mazePath: string) {
 				if (lastStep != null)
 					drawer.restore(lastStep.x, lastStep.y);
 
-
 				if (currentStep == null)
 					alert('saiu');
 			}
@@ -83,7 +77,7 @@ function clearCanvasHtml() {
 		section.innerHTML = '';
 }
 
-function createMazeFromFile(mazeFile: string) {
+function createMazeFromFile(mazeFile: string): IPlayer {
 	const lines = mazeFile.split('\n');
 
 	const dimensao = lines[0].split(' ');
@@ -95,6 +89,8 @@ function createMazeFromFile(mazeFile: string) {
 
 	const y = Number(posicao[1]);
 	const x = Number(posicao[2]);
+
+	const playerIndex = Number(lines[2].split(' ')[1]);
 
 	const grid = [] as number[][];
 
@@ -108,7 +104,29 @@ function createMazeFromFile(mazeFile: string) {
 		}
 	}
 
-	return new Loteria(x, y, new Maze(grid));
+	const maze = new Maze(grid);
+	let player: IPlayer;
+
+	switch (playerIndex) { //verifica o robo atual, e seta ele como o robo do programa
+		case 1: {
+			player = new C3PO(x, y, maze);
+			break;
+		}
+		case 2: {
+			player = new R2D2(x, y, maze);
+			break;
+		}
+		case 3: {
+			player = new Walle(x, y, maze);
+			break;
+		}
+		default: {
+			player = new Loteria(x, y, maze)
+			break;
+		}
+	}
+
+	return player;
 }
 
 
