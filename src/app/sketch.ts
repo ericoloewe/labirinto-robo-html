@@ -7,8 +7,10 @@ export async function createMaze(mazePath: string) {
 
 	console.log(P5);
 
-	/** @type {import('p5')} */
 	type P5Type = import('p5');
+	type P5Image = import('p5').Image;
+
+
 
 	const section = document.getElementById('canvasSection');
 
@@ -22,11 +24,13 @@ export async function createMaze(mazePath: string) {
 
 	const maze = createMazeOfFile(mazeFile);
 	const tileSize = 20;
+	const images = {} as { brick: P5Image, sand: P5Image };
 
 	// Creating the sketch itself
 	const sketch = (p5: P5Type) => {
 		p5.preload = () => {
-			// img = loadImage('assets/laDefense.jpg');
+			images.brick = p5.loadImage('brick.jpg');
+			images.sand = p5.loadImage('sand.jpg');
 		}
 
 		// The sketch setup method 
@@ -44,12 +48,10 @@ export async function createMaze(mazePath: string) {
 			for (let i = 0; i < maze.grid.length; i++) {
 				for (let j = 0; j < maze.grid[i].length; j++) {
 					if (maze.grid[i][j] === 1) {
-						p5.fill(255);
+						p5.image(images.brick, j * tileSize, i * tileSize, tileSize, tileSize);
 					} else {
-						p5.fill(0);
+						p5.image(images.sand, j * tileSize, i * tileSize, tileSize, tileSize);
 					}
-
-					p5.rect(j * tileSize, i * tileSize, tileSize, tileSize);
 				}
 			}
 
