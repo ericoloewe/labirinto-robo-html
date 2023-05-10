@@ -54,13 +54,16 @@ export async function createMaze(mazePath: string) {
 				const lastStep = drawer.steps[drawer.current - 1]
 				const currentStep = drawer.steps[drawer.current++];
 
+				if (currentStep == null) {
+					alert('saiu');
+					return;
+				}
+
 				drawer.drawPlayer(currentStep.x, currentStep.y);
 
 				if (lastStep != null)
 					drawer.restore(lastStep.x, lastStep.y);
 
-				if (currentStep == null)
-					alert('saiu');
 			}
 		}
 	};
