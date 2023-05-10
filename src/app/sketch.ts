@@ -55,7 +55,7 @@ export async function createMaze(mazePath: string) {
 				const currentStep = drawer.steps[drawer.current++];
 
 				if (currentStep == null) {
-					alert('saiu');
+					// alert('saiu');
 					return;
 				}
 

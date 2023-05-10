@@ -6,36 +6,23 @@ export class C3PO implements IPlayer {
 	initialX: number = 1;
 	initialY: number = 1;
 	maze: Maze;
+	sentido: string;
 
 	constructor(x: number, y: number, maze: Maze) {
 		this.initialX = x;
 		this.initialY = y;
 		this.maze = maze;
+		this.sentido = 'L'
 	}
 
 	generateSteps(maxSteps = 500): Step[] {
 		let cont = 1, saiu = false, x = this.initialX, y = this.initialY;
 		const steps = [new Step(x, y)];
+		let dx, dy;
 
 		while (!saiu && cont < maxSteps) {
-			let dx, dy;
-
-			do {
-				let dir = this.getRandomInt(0, 3);
-				dx = 0;
-				dy = 0;
-				switch (dir) {
-					case 0: dx = 1;
-						break;
-					case 1: dx = -1;
-						break;
-					case 2: dy = 1;
-						break;
-					case 3: dy = -1;
-						break;
-				}
-			}
-			while (this.maze.isWall(x + dx, y + dy));
+			dx = dy = 0;
+			this.caminhar(x, y, dx, dy);
 			x += dx;
 			y += dy;
 			steps.push(new Step(x, y));
@@ -48,10 +35,35 @@ export class C3PO implements IPlayer {
 		return steps;
 	}
 
-	private getRandomInt(min: number, max: number) {
-		min = Math.ceil(min);
-		max = Math.floor(max);
+	private caminhar(x: number, y: number, dx: number, dy: number) {
+		let ok = true;
+		while (ok) {
+			if (this.maze.isPath(x, y)) {
+				switch (this.sentido) {
+					case "N":
+						dy = -1;
+						break;
+					case "S":
+						dy = 1;
+						break;
+					case "L":
+						dx = 1;
+						break;
+					case "O":
+						dx = -1;
+						break;
+				}
+				ok = false;
+			} else {
+				this.mudarSentido();
+			}
+		}
+	}
 
-		return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+	private mudarSentido() {
+		let s = ["N", "L", "S", "O"];
+		let i = s.indexOf(this.sentido);
+		i = (i + 1) % 4;
+		this.sentido = s[i];
 	}
 }

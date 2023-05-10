@@ -19,8 +19,8 @@ export class P5Drawer {
 		this.images.brick = this.canvas.loadImage('brick.jpg');
 		this.images.sand = this.canvas.loadImage('sand.jpg');
 		this.images.loteria = this.canvas.loadImage('b9.jpg');
-		this.images.c3po = this.canvas.loadImage('c3po.jpg');
-		this.images.r2d2 = this.canvas.loadImage('r2d2.jpg');
+		this.images.c3po = this.canvas.loadImage('C3PO.jpg');
+		this.images.r2d2 = this.canvas.loadImage('R2D2.jpg');
 		this.images.walle = this.canvas.loadImage('walle.jpg');
 	}
 
@@ -65,6 +65,6 @@ export class P5Drawer {
 	}
 
 	public generateStepsAndDraw() {
-		this.steps = this.player.generateSteps();
+		this.steps = this.player.generateSteps(500);
 	}
 }
