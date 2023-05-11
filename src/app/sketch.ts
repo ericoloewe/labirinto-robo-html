@@ -12,7 +12,11 @@ import { Walle } from './walle';
 export type P5Type = import('p5');
 export type P5Image = import('p5').Image;
 
-export async function createMaze(mazePath: string) {
+export interface Options {
+	waitTime: number
+}
+
+export async function createMaze(mazePath: string, options: Options) {
 	const { default: P5 } = await import("p5");
 	clearCanvasHtml();
 
@@ -39,11 +43,10 @@ export async function createMaze(mazePath: string) {
 		};
 
 		let time = Date.now();
-		const waitTime = 500;
 
 		// The sketch draw method
 		p5.draw = () => {
-			if ((Date.now() - time) > waitTime) {
+			if ((Date.now() - time) > options.waitTime) {
 				executeAction();
 				time = Date.now();
 			}
