@@ -99,4 +99,8 @@ export class P5Drawer {
 	public generateStepsAndDraw() {
 		this.steps = this.player.generateSteps(500);
 	}
+
+	public stopAndRemove() {
+		this.canvas.remove();
+	}
 }

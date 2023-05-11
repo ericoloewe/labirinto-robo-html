@@ -25,39 +25,54 @@ export default function Home() {
     }
 
     options.onEnd = (cs) => {
-      setCurrentStep(cs);
+      setCurrentIndex(cs);
       alert("terminou o circuito ou a quantidade de passos");
     }
   });
 
   useEffect(() => {
     // Client-side-only code
-
-    drawer?.canvas?.remove();
-
-    createMaze(mazeName, player, options).then(d => {
-      drawer = d;
-
-      console.info("Carregado labirinto: ", drawer);
-      drawer.generateStepsAndDraw();
-    });
+    stopAndClean();
   }, [mazeName, player]);
 
   useEffect(() => {
     options.waitTime = waitTime;
   }, [waitTime]);
 
+  function start() {
+    stopAndClean();
+    createMaze(mazeName, player, options).then(d => {
+      drawer = d;
+      drawer?.generateStepsAndDraw();
+    });
+  }
+
+  function stopAndClean() {
+    drawer?.stopAndRemove();
+    setCurrentIndex(0);
+    setCurrentStep(undefined);
+  }
+
   return (
-    <main className="flex min-h-screen flex-row items-center justify-between p-24">
+    <main className="flex min-h-screen lg:flex-row flex-col items-center justify-between p-24">
       <section id="canvasSection"></section>
       <div className="mb-32 flex flex-col text-center lg:mb-0 lg:text-left">
         <div className="actions group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30">
           <div className="sm:col-span-3">
+            <button type="button" onClick={start} className="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+              Iniciar 🚀
+            </button>
+            {" "}
+            <button type="button" onClick={stopAndClean} className="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+              Parar ✋
+            </button>
+          </div>
+          <div className="sm:col-span-3">
             <label className="block text-sm font-medium leading-6 text-gray-900">Passo atual: {currentIndex}</label>
           </div>
           <div className="sm:col-span-3">
-            <label className="block text-sm font-medium leading-6 text-gray-900">X atual: {currentStep?.x}</label>
-            <label className="block text-sm font-medium leading-6 text-gray-900">Y atual: {currentStep?.y}</label>
+            <label className="block text-sm font-medium leading-6 text-gray-900">X atual: {currentStep?.x || '-'}</label>
+            <label className="block text-sm font-medium leading-6 text-gray-900">Y atual: {currentStep?.y || '-'}</label>
             {currentStep instanceof StepWithDirection
               ? <label className="block text-sm font-medium leading-6 text-gray-900">Sentido atual: {currentStep?.direction}</label>
               : null}
