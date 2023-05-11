@@ -10,7 +10,7 @@ const options: Options = {
 export default function Home() {
   const [player, setPlayer] = useState<Players>(Players.LOTERIA);
   const [maze, setMaze] = useState<string>('labirinto');
-  const [waitTime, setWaitTime] = useState<number>(1000);
+  const [waitTime, setWaitTime] = useState<number>(250);
   const [currentStep, setCurrentStep] = useState<number>(0);
 
   useEffect(() => {

@@ -19,8 +19,8 @@ export class StepWithDirection extends Step {
 }
 
 export enum Direction {
-	Norte,
-	Sul,
-	Leste,
-	Oeste
+	NORTH = "NORTH",
+	SOUTH = "SOUTH",
+	EAST = "EAST",
+	WEST = "WEST",
 }

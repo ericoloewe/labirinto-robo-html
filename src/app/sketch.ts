@@ -73,7 +73,7 @@ function executeAction(drawer: P5Drawer, options: Options) {
 	if (drawer.steps != null) {
 		const lastStep = drawer.steps[drawer.current - 1]
 		const currentStep = drawer.steps[drawer.current];
-		let direction = Direction.Leste;
+		let direction = Direction.EAST;
 
 		if (currentStep == null) {
 			// alert('saiu');

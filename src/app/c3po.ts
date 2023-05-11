@@ -1,6 +1,6 @@
 import { Maze } from './maze';
 import { IPlayer } from "./interfaces";
-import { Step } from "./step";
+import { Direction, Step, StepWithDirection } from "./step";
 
 export class C3PO implements IPlayer {
 	initialX: number = 1;
@@ -16,54 +16,124 @@ export class C3PO implements IPlayer {
 	}
 
 	generateSteps(maxSteps = 500): Step[] {
-		let cont = 1, saiu = false, x = this.initialX, y = this.initialY;
-		const steps = [new Step(x, y)];
-		let dx, dy;
+		const steps = [new StepWithDirection(this.initialX, this.initialY, Direction.EAST)];
 
-		while (!saiu && cont < maxSteps) {
-			dx = dy = 0;
-			this.caminhar(x, y, dx, dy);
-			x += dx;
-			y += dy;
-			steps.push(new Step(x, y));
-			cont++;
+		while (steps.length < maxSteps) {
+			this.walk(steps, maxSteps);
+			const lastStep = steps[steps.length - 1];
 
-			if (this.maze.isOut(x, y))
-				saiu = true;
+			if (this.maze.isOut(lastStep.x, lastStep.y))
+				break;
 		}
 
 		return steps;
 	}
 
-	private caminhar(x: number, y: number, dx: number, dy: number) {
-		let ok = true;
-		while (ok) {
-			if (this.maze.isPath(x, y)) {
-				switch (this.sentido) {
-					case "N":
-						dy = -1;
-						break;
-					case "S":
-						dy = 1;
-						break;
-					case "L":
-						dx = 1;
-						break;
-					case "O":
-						dx = -1;
-						break;
+	private walk(steps: StepWithDirection[], maxSteps: number) {
+		let i = 0;
+		let lastStep = steps[steps.length - 1];
+		let { direction, x, y } = lastStep;
+
+		while (3 >= i++ && steps.length < maxSteps) { // loop criado para enquanto não for feito algo, o programa nao saia dessa função
+			if (this.canWalk(x, y, direction)) {  // verifica se n�o � parede a frente
+				steps.push(this.getNextStepFor(x, y, direction));
+
+				break;
+			} else { //caso for uma parede a frente, ou ele nao estiver com a mao a frente ele faz os seguintes passos
+				if (!this.isWallAtRight(x, y, direction)) {
+					direction = this.getRight(direction);
+				} else {
+					direction = this.getLeft(direction);
 				}
-				ok = false;
-			} else {
-				this.mudarSentido();
+
+				steps.push(new StepWithDirection(x, y, direction));
 			}
 		}
 	}
 
-	private mudarSentido() {
-		let s = ["N", "L", "S", "O"];
-		let i = s.indexOf(this.sentido);
-		i = (i + 1) % 4;
-		this.sentido = s[i];
+	private getLeft(direction: Direction) {
+		let sent = Direction.EAST;
+
+		switch (direction) { //verifica o sentido e retorna a direita do robo
+			case Direction.NORTH:
+				sent = Direction.WEST;
+				break;
+			case Direction.EAST:
+				sent = Direction.NORTH;
+				break;
+			case Direction.WEST:
+				sent = Direction.SOUTH;
+				break;
+			default:
+				break;
+		}
+		return sent;
+	}
+
+	private getRight(direction: Direction) {
+		let sent = Direction.EAST;
+
+		switch (direction) { //verifica o sentido e retorna a direita do robo
+			case Direction.EAST:
+				sent = Direction.SOUTH;
+				break;
+			case Direction.SOUTH:
+				sent = Direction.WEST;
+				break;
+			case Direction.WEST:
+				sent = Direction.NORTH;
+				break;
+			default:
+				break;
+		}
+
+		return sent;
+	}
+
+	private isWallAtRight(x: number, y: number, direction: Direction) {
+		let ret = false;
+
+		switch (direction) { //verifica o sentido e retorna se for parede na esquerda ou nao
+			case Direction.SOUTH:
+				if (this.maze.isWall(x - 1, y)) ret = true;
+				break;
+			case Direction.WEST:
+				if (this.maze.isWall(x, y - 1)) ret = true;
+				break;
+			case Direction.NORTH:
+				if (this.maze.isWall(x + 1, y)) ret = true;
+				break;
+			case Direction.EAST:
+				if (this.maze.isWall(x, y + 1)) ret = true;
+				break;
+		}
+		return ret;
+	}
+
+	private canWalk(x: number, y: number, direction: Direction) { //verifica o sentido e retorna se é possivel caminhar para o mesmo(que a frente nao ha parede)
+		const nextStep = this.getNextStepFor(x, y, direction);
+
+		return this.maze.isPath(nextStep.x, nextStep.y) || this.maze.isOut(nextStep.x, nextStep.y);
+	}
+
+	private getNextStepFor(x: number, y: number, direction: Direction) {
+		let nextX = x, nextY = y;
+
+		switch (direction) {
+			case Direction.EAST:
+				nextX++;
+				break;
+			case Direction.NORTH:
+				nextY--;
+				break;
+			case Direction.WEST:
+				nextX--;
+				break;
+			case Direction.SOUTH:
+				nextY++;
+				break;
+		}
+
+		return new StepWithDirection(nextX, nextY, direction);
 	}
 }

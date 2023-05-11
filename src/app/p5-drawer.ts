@@ -72,13 +72,13 @@ export class P5Drawer {
 		let angle = 0;
 
 		switch (direction) {
-			case Direction.Norte:
+			case Direction.NORTH:
 				angle = 270;
 				break;
-			case Direction.Sul:
+			case Direction.SOUTH:
 				angle = 90;
 				break;
-			case Direction.Oeste:
+			case Direction.WEST:
 				angle = 180;
 				break;
 			default:

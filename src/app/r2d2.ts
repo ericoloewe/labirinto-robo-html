@@ -14,15 +14,15 @@ export class R2D2 implements IPlayer {
 	}
 
 	generateSteps(maxSteps = 500): Step[] {
-		let saiu = false, x = this.initialX, y = this.initialY;
-		const steps = [new StepWithDirection(x, y, Direction.Leste)];
+		const steps = [new StepWithDirection(this.initialX, this.initialY, Direction.EAST)];
 
-		debugger
-		while (!saiu && steps.length < maxSteps) {
+		while (steps.length < maxSteps) {
 			this.caminhar(steps, maxSteps);
 
-			if (this.maze.isOut(x, y))
-				saiu = true;
+			const lastStep = steps[steps.length - 1];
+
+			if (this.maze.isOut(lastStep.x, lastStep.y))
+				break;
 		}
 
 		return steps;
@@ -30,51 +30,33 @@ export class R2D2 implements IPlayer {
 
 	private caminhar(steps: StepWithDirection[], maxSteps: number) {
 		let i = 0;
-		let nextY = 0, nextX = 0;
 		let lastStep = steps[steps.length - 1];
 		let { direction, x, y } = lastStep;
 
 		while (3 >= i++ || steps.length < maxSteps) { // loop criado para enquanto não for feito algo, o programa nao saia dessa função
-			if (this.tentarCaminhar(x, y, direction) && this.ehParedeEsq(x, y, direction)) { // verifica se não é parede a frente, e se ele esta com a mão a esquerda
-				switch (direction) { //caso sim, ele anda para o sentido indicado
-					case Direction.Norte:
-						nextY = -1;
-						break;
-					case Direction.Sul:
-						nextY = 1;
-						break;
-					case Direction.Leste:
-						nextX = 1;
-						break;
-					case Direction.Oeste:
-						nextX = -1;
-						break;
-				}
-
-				x += nextX;
-				y += nextY;
-				steps.push(new StepWithDirection(x, y, direction));
+			if (this.canWalk(x, y, direction) && this.isWallAtLeft(x, y, direction)) { // verifica se não é parede a frente, e se ele esta com a mão a esquerda
+				steps.push(this.getNextStepFor(x, y, direction));
 
 				break;
 			} else { //caso for uma parede a frente, ou ele nao estiver com a mao a frente ele faz os seguintes passos
-				direction = this.getEsq(direction);
+				direction = this.getLeft(direction);
 				steps.push(new StepWithDirection(x, y, direction));
 			}
 		}
 	}
 
-	private getEsq(direction: Direction) {
-		let sent = Direction.Leste;
+	private getLeft(direction: Direction) {
+		let sent = Direction.EAST;
 
 		switch (direction) { //verifica o sentido e retorna a direita do robo
-			case Direction.Norte:
-				sent = Direction.Oeste;
+			case Direction.NORTH:
+				sent = Direction.WEST;
 				break;
-			case Direction.Leste:
-				sent = Direction.Norte;
+			case Direction.EAST:
+				sent = Direction.NORTH;
 				break;
-			case Direction.Oeste:
-				sent = Direction.Sul;
+			case Direction.WEST:
+				sent = Direction.SOUTH;
 				break;
 			default:
 				break;
@@ -82,52 +64,50 @@ export class R2D2 implements IPlayer {
 		return sent;
 	}
 
-	private getDir(direction: Direction) {
-		let sent = Direction.Leste;
-
-		switch (direction) { //verifica o sentido e retorna a direita do robo
-			case Direction.Leste:
-				sent = Direction.Sul;
-				break;
-			case Direction.Sul:
-				sent = Direction.Oeste;
-				break;
-			case Direction.Oeste:
-				sent = Direction.Norte;
-				break;
-			default:
-				break;
-		}
-
-		return sent;
-	}
-
-	private ehParedeEsq(x: number, y: number, direction: Direction) {
+	private isWallAtLeft(x: number, y: number, direction: Direction) {
 		let ret = false;
 
 		switch (direction) { //verifica o sentido e retorna se for parede na esquerda ou nao
-			case Direction.Norte:
+			case Direction.NORTH:
 				if (this.maze.isWall(x - 1, y)) ret = true;
 				break;
-			case Direction.Leste:
+			case Direction.EAST:
 				if (this.maze.isWall(x, y - 1)) ret = true;
 				break;
-			case Direction.Sul:
+			case Direction.SOUTH:
 				if (this.maze.isWall(x + 1, y)) ret = true;
 				break;
-			case Direction.Oeste:
+			case Direction.WEST:
 				if (this.maze.isWall(x, y + 1)) ret = true;
 				break;
 		}
 		return ret;
 	}
 
-	private tentarCaminhar(x: number, y: number, direction: Direction) { //verifica o sentido e retorna se é possivel caminhar para o mesmo(que a frente nao ha parede)
-		let ret = false;
-		if (this.maze.isPath(x + 1, y) && direction === Direction.Leste) ret = true;
-		else if (this.maze.isPath(x, y - 1) && direction === Direction.Norte) ret = true;
-		else if (this.maze.isPath(x, y + 1) && direction === Direction.Sul) ret = true;
-		else if (this.maze.isPath(x - 1, y) && direction === Direction.Oeste) ret = true;
-		return ret;
+	private canWalk(x: number, y: number, direction: Direction) { //verifica o sentido e retorna se é possivel caminhar para o mesmo(que a frente nao ha parede)
+		const nextStep = this.getNextStepFor(x, y, direction);
+
+		return this.maze.isPath(nextStep.x, nextStep.y) || this.maze.isOut(nextStep.x, nextStep.y);
+	}
+
+	private getNextStepFor(x: number, y: number, direction: Direction) {
+		let nextX = x, nextY = y;
+
+		switch (direction) {
+			case Direction.EAST:
+				nextX++;
+				break;
+			case Direction.NORTH:
+				nextY--;
+				break;
+			case Direction.WEST:
+				nextX--;
+				break;
+			case Direction.SOUTH:
+				nextY++;
+				break;
+		}
+
+		return new StepWithDirection(nextX, nextY, direction);
 	}
 }
