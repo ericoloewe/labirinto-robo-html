@@ -17,6 +17,7 @@ export class R2D2 implements IPlayer {
 		let saiu = false, x = this.initialX, y = this.initialY;
 		const steps = [new StepWithDirection(x, y, Direction.Leste)];
 
+		debugger
 		while (!saiu && steps.length < maxSteps) {
 			this.caminhar(steps, maxSteps);
 
@@ -29,29 +30,29 @@ export class R2D2 implements IPlayer {
 
 	private caminhar(steps: StepWithDirection[], maxSteps: number) {
 		let i = 0;
-		let directionY = 0, directionX = 0;
+		let nextY = 0, nextX = 0;
 		let lastStep = steps[steps.length - 1];
 		let { direction, x, y } = lastStep;
 
-		while (3 >= i++ || steps.length > maxSteps) { // loop criado para enquanto não for feito algo, o programa nao saia dessa função
+		while (3 >= i++ || steps.length < maxSteps) { // loop criado para enquanto não for feito algo, o programa nao saia dessa função
 			if (this.tentarCaminhar(x, y, direction) && this.ehParedeEsq(x, y, direction)) { // verifica se não é parede a frente, e se ele esta com a mão a esquerda
 				switch (direction) { //caso sim, ele anda para o sentido indicado
 					case Direction.Norte:
-						directionY = -1;
+						nextY = -1;
 						break;
 					case Direction.Sul:
-						directionY = 1;
+						nextY = 1;
 						break;
 					case Direction.Leste:
-						directionX = 1;
+						nextX = 1;
 						break;
 					case Direction.Oeste:
-						directionX = -1;
+						nextX = -1;
 						break;
 				}
 
-				x += directionX;
-				y += directionY;
+				x += nextX;
+				y += nextY;
 				steps.push(new StepWithDirection(x, y, direction));
 
 				break;
