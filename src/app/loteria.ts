@@ -1,6 +1,7 @@
 import { Maze } from './maze';
 import { IPlayer } from "./interfaces";
 import { Step } from "./step";
+import rn from 'random-number';
 
 export class Loteria implements IPlayer {
 	initialX: number = 1;
@@ -14,11 +15,11 @@ export class Loteria implements IPlayer {
 	}
 
 	generateSteps(maxSteps = 500): Step[] {
-		let cont = 1, saiu = false, x = this.initialX, y = this.initialY;
+		let saiu = false, x = this.initialX, y = this.initialY;
 		const steps = [new Step(x, y)];
 
-		while (!saiu && cont < maxSteps) {
-			let dx, dy;
+		while (!saiu && steps.length < maxSteps) {
+			let dx, dy, i = 0;
 
 			do {
 				let dir = this.getRandomInt(0, 3);
@@ -35,11 +36,14 @@ export class Loteria implements IPlayer {
 						break;
 				}
 			}
-			while (this.maze.isWall(x + dx, y + dy));
-			x += dx;
-			y += dy;
+			while (this.maze.isWall(x + dx, y + dy) && i++ < 4);
+
+			if (this.maze.isPath(x + dx, y + dy)) {
+				x += dx;
+				y += dy;
+			}
+
 			steps.push(new Step(x, y));
-			cont++;
 
 			if (this.maze.isOut(x, y))
 				saiu = true;
@@ -49,9 +53,6 @@ export class Loteria implements IPlayer {
 	}
 
 	private getRandomInt(min: number, max: number) {
-		min = Math.ceil(min);
-		max = Math.floor(max);
-
-		return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+		return rn({ min, max, integer: true })
 	}
 }
