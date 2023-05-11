@@ -2,6 +2,11 @@ import { Maze } from './maze';
 import { IPlayer } from "./interfaces";
 import { Step } from "./step";
 
+interface DXY {
+	dx: number;
+	dy: number;
+}
+
 export class R2D2 implements IPlayer {
 	initialX: number = 1;
 	initialY: number = 1;
@@ -18,13 +23,15 @@ export class R2D2 implements IPlayer {
 	generateSteps(maxSteps = 500): Step[] {
 		let cont = 1, saiu = false, x = this.initialX, y = this.initialY;
 		const steps = [new Step(x, y)];
-		let dx, dy;
+		const dxy: DXY = { dx: 0, dy: 0 };
+
+		debugger
 
 		while (!saiu && cont < maxSteps) {
-			dx = dy = 0;
-			this.caminhar(x, y, dx, dy);
-			x += dx;
-			y += dy;
+			dxy.dx = dxy.dy = 0;
+			this.caminhar(x, y, dxy);
+			x += dxy.dx;
+			y += dxy.dy;
 			steps.push(new Step(x, y));
 			cont++;
 
@@ -35,38 +42,29 @@ export class R2D2 implements IPlayer {
 		return steps;
 	}
 
-	private caminhar(x: number, y: number, dx: number, dy: number) {
-		let ok = true, okk = false;
-		while (ok) { // loop criado para enquanto não for feito algo, o programa nao saia dessa função
-			if (!this.maze.isWall(x, y) && (this.ehParedeEsq(x, y) || okk)) { // verifica se não é parede a frente, e se ele esta com a mão a esquerda
+	private caminhar(x: number, y: number, dxy: DXY) {
+		let ehParedeAFrenteDoSentido = true;
+		let i = 0;
+
+		while (ehParedeAFrenteDoSentido && 3 >= i++) { // loop criado para enquanto não for feito algo, o programa nao saia dessa função
+			if (this.tentarCaminhar(x, y) && this.ehParedeEsq(x, y)) { // verifica se não é parede a frente, e se ele esta com a mão a esquerda
 				switch (this.sentido) { //caso sim, ele anda para o sentido indicado
 					case 'N':
-						dy = -1;
+						dxy.dy = -1;
 						break;
 					case 'S':
-						dy = 1;
+						dxy.dy = 1;
 						break;
 					case 'L':
-						dx = 1;
+						dxy.dx = 1;
 						break;
 					case 'O':
-						dx = -1;
+						dxy.dx = -1;
 						break;
 				}
-				ok = false; //ele seta o "ok" como false para ele sair do loop
+				ehParedeAFrenteDoSentido = false; //ele seta o "ok" como false para ele sair do loop
 			} else { //caso for uma parede a frente, ou ele nao estiver com a mao a frente ele faz os seguintes passos
-				if (this.ehParedeEsq(x, y)) { //verifica se é parede na esquerda
-					while (this.maze.isWall(x, y)) { //caso sim verifica se é parede a frente
-						if (!this.ehParedeEsq(x, y)) { //se nao for parede a esquerda ele rotaciona o robo a esquerda
-							this.rotateRob(this.getEsq());
-						} else { //caso for parede a esquerda ele rotaciona o robo a direita
-							this.rotateRob(this.getDir());
-						}
-					}
-				} else { //caso nao for parede a frente ele rotaciona o robo a esquerda, para continuar com a devida mao a parede
-					this.rotateRob(this.getEsq());
-					okk = true;
-				}
+				this.rotateRob(this.getEsq());
 			}
 		}
 	}
@@ -110,38 +108,19 @@ export class R2D2 implements IPlayer {
 	}
 
 	private ehParedeEsq(x: number, y: number) {
-		let ret = true;
+		let ret = false;
 		switch (this.sentido) { //verifica o sentido e retorna se for parede na esquerda ou nao
 			case 'N':
-				if (this.maze.isPath(x - 1, y)) ret = false;
+				if (this.maze.isWall(x - 1, y)) ret = true;
 				break;
 			case 'L':
-				if (this.maze.isPath(x, y - 1)) ret = false;
+				if (this.maze.isWall(x, y - 1)) ret = true;
 				break;
 			case 'S':
-				if (this.maze.isPath(x + 1, y)) ret = false;
+				if (this.maze.isWall(x + 1, y)) ret = true;
 				break;
 			case 'O':
-				if (this.maze.isPath(x, y + 1)) ret = false;
-				break;
-		}
-		return ret;
-	}
-
-	private ehParedeDir(x: number, y: number) {
-		let ret = true;
-		switch (this.sentido) { //verifica o sentido e retorna se for parede na direita ou nao
-			case 'N':
-				if (this.maze.isPath(x + 1, y)) ret = false;
-				break;
-			case 'L':
-				if (this.maze.isPath(x, y + 1)) ret = false;
-				break;
-			case 'S':
-				if (this.maze.isPath(x - 1, y)) ret = false;
-				break;
-			case 'O':
-				if (this.maze.isPath(x, y - 1)) ret = false;
+				if (this.maze.isWall(x, y + 1)) ret = true;
 				break;
 		}
 		return ret;
@@ -160,6 +139,7 @@ export class R2D2 implements IPlayer {
 		let s = ["N", "L", "S", "O"];
 
 		for (let i = 0; i < 4; i++) //verifica o sentido recebido por parametro, se o mesmo � possivel ser setado no sentido da classe
-			if (s[i] == sentido) sentido = sentido;
+			if (s[i] == sentido)
+				this.sentido = sentido;
 	}
 }

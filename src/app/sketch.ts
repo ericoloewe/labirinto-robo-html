@@ -62,11 +62,10 @@ export async function createMaze(mazePath: string, options: Options) {
 					return;
 				}
 
-				drawer.drawPlayer(currentStep.x, currentStep.y);
-
 				if (lastStep != null)
 					drawer.restore(lastStep.x, lastStep.y);
 
+				drawer.drawPlayer(currentStep.x, currentStep.y);
 			}
 		}
 	};
