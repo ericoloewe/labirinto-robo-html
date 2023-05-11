@@ -2,35 +2,46 @@
 
 import { useEffect, useState } from "react";
 import { Options, Players, createMaze } from "./sketch";
+import { Step, StepWithDirection } from "./step";
+import { P5Drawer } from "./p5-drawer";
 
 const options: Options = {
   waitTime: 200,
 }
 
+let drawer: P5Drawer;
+
 export default function Home() {
   const [player, setPlayer] = useState<Players>(Players.LOTERIA);
-  const [maze, setMaze] = useState<string>('labirinto');
+  const [mazeName, setMazeName] = useState<string>('labirinto');
   const [waitTime, setWaitTime] = useState<number>(250);
-  const [currentStep, setCurrentStep] = useState<number>(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [currentStep, setCurrentStep] = useState<Step>();
 
   useEffect(() => {
-    options.onAction = (cs) => setCurrentStep(cs);
+    options.onAction = (step, currentIndex) => {
+      setCurrentStep(step);
+      setCurrentIndex(currentIndex);
+    }
 
     options.onEnd = (cs) => {
       setCurrentStep(cs);
       alert("terminou o circuito ou a quantidade de passos");
-    };
+    }
   });
 
   useEffect(() => {
     // Client-side-only code
 
-    createMaze(maze, player, options).then(drawer => {
-      console.log("Carregado labirinto: ", drawer);
+    drawer?.canvas?.remove();
 
+    createMaze(mazeName, player, options).then(d => {
+      drawer = d;
+
+      console.info("Carregado labirinto: ", drawer);
       drawer.generateStepsAndDraw();
     });
-  }, [maze, player]);
+  }, [mazeName, player]);
 
   useEffect(() => {
     options.waitTime = waitTime;
@@ -42,7 +53,14 @@ export default function Home() {
       <div className="mb-32 flex flex-col text-center lg:mb-0 lg:text-left">
         <div className="actions group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30">
           <div className="sm:col-span-3">
-            <label htmlFor="waitTime" className="block text-sm font-medium leading-6 text-gray-900">Passo atual: {currentStep}</label>
+            <label className="block text-sm font-medium leading-6 text-gray-900">Passo atual: {currentIndex}</label>
+          </div>
+          <div className="sm:col-span-3">
+            <label className="block text-sm font-medium leading-6 text-gray-900">X atual: {currentStep?.x}</label>
+            <label className="block text-sm font-medium leading-6 text-gray-900">Y atual: {currentStep?.y}</label>
+            {currentStep instanceof StepWithDirection
+              ? <label className="block text-sm font-medium leading-6 text-gray-900">Sentido atual: {currentStep?.direction}</label>
+              : null}
           </div>
           <div className="sm:col-span-3">
             <label htmlFor="waitTime" className="block text-sm font-medium leading-6 text-gray-900">Intervalo entre desenhos</label>
@@ -53,7 +71,7 @@ export default function Home() {
           <div className="sm:col-span-3">
             <label htmlFor="maze" className="block text-sm font-medium leading-6 text-gray-900">Labirintos</label>
             <div className="mt-2">
-              <select name="maze" id="maze" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={maze} placeholder="tempo em ms" onChange={e => setMaze(e.target.value)} >
+              <select name="maze" id="maze" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={mazeName} placeholder="tempo em ms" onChange={e => setMazeName(e.target.value)} >
                 <option value="labirinto">labirinto</option>
                 <option value="labirinto1">labirinto1</option>
                 <option value="labirinto2">labirinto2</option>
@@ -85,7 +103,7 @@ export default function Home() {
             <img src="./C3PO.jpg" className="h-8 w-8 inline-block" />
           </h2>
           <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            ...
+            Gira para esquerda se não tiver parede a direita, caso contrario, gira para direita.
           </p>
         </button>
         <button
@@ -109,7 +127,7 @@ export default function Home() {
             <img src="./walle.jpg" className="h-8 w-8 inline-block" />
           </h2>
           <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Encontra o caminho mais rapido atraves de um algoritmo de arvore.
+            Sempre sai do labirinto atraves de um algoritmo de arvore.
           </p>
         </button>
       </div>

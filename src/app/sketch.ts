@@ -8,7 +8,7 @@ import { IPlayer } from './interfaces';
 import { C3PO } from './c3po';
 import { R2D2 } from './r2d2';
 import { Walle } from './walle';
-import { Direction, StepWithDirection } from './step';
+import { Direction, Step, StepWithDirection } from './step';
 
 export enum Players {
 	R2D2,
@@ -22,11 +22,11 @@ export type P5Image = import('p5').Image;
 
 export interface Options {
 	onEnd?: (currentStep: number) => void;
-	onAction?: (currentStep: number) => void;
+	onAction?: (step: Step, currentStep: number) => void;
 	waitTime: number
 }
 
-export async function createMaze(mazePath: string, playerType: Players, options: Options) {
+export async function createMaze(mazePath: string, playerType: Players, options: Options): Promise<P5Drawer> {
 	const { default: P5 } = await import("p5");
 	clearCanvasHtml();
 
@@ -89,13 +89,12 @@ function executeAction(drawer: P5Drawer, options: Options) {
 		drawer.drawPlayer(currentStep.x, currentStep.y, direction);
 
 		if (options.onAction != null)
-			options.onAction(drawer.current);
+			options.onAction(currentStep, drawer.current);
 
 		drawer.current++;
 
 		if (drawer.steps.length === drawer.current && options.onEnd != null)
 			options.onEnd(drawer.current);
-
 	}
 }
 
