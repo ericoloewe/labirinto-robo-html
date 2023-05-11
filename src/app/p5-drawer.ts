@@ -1,6 +1,6 @@
 import { IPlayer } from './interfaces';
 import { P5Type, P5Image } from './sketch';
-import { Step } from './step';
+import { Direction, Step } from './step';
 
 export class P5Drawer {
 	canvas: P5Type;
@@ -50,10 +50,42 @@ export class P5Drawer {
 		this.canvas.image(this.images.sand, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
 	}
 
-	public drawPlayer(x: number, y: number) {
+	public drawPlayer(x: number, y: number, direction: Direction) {
 		const player = this.player.constructor.name.toLowerCase();
+		const realX = x * this.tileSize;
+		const realY = y * this.tileSize;
 
-		this.canvas.image(this.images[player], x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+		this.canvas.push();
+
+		//note that this will rotate shapes around the ORIGIN
+		//this is why we translated the origin to the center
+		this.canvas.translate(realX + this.tileSize / 2, realY + this.tileSize / 2);
+		this.canvas.angleMode(this.canvas.DEGREES);
+		this.canvas.rotate(this.getAngleForPlayerDirection(direction));
+
+		this.canvas.imageMode(this.canvas.CENTER);
+		this.canvas.image(this.images[player], 0, 0, this.tileSize, this.tileSize);
+		this.canvas.pop();
+	}
+
+	private getAngleForPlayerDirection(direction: Direction): number {
+		let angle = 0;
+
+		switch (direction) {
+			case Direction.Norte:
+				angle = 270;
+				break;
+			case Direction.Sul:
+				angle = 90;
+				break;
+			case Direction.Oeste:
+				angle = 180;
+				break;
+			default:
+				break;
+		}
+
+		return angle;
 	}
 
 	public restore(x: number, y: number) {

@@ -8,6 +8,7 @@ import { IPlayer } from './interfaces';
 import { C3PO } from './c3po';
 import { R2D2 } from './r2d2';
 import { Walle } from './walle';
+import { Direction, StepWithDirection } from './step';
 
 export type P5Type = import('p5');
 export type P5Image = import('p5').Image;
@@ -47,32 +48,37 @@ export async function createMaze(mazePath: string, options: Options) {
 		// The sketch draw method
 		p5.draw = () => {
 			if ((Date.now() - time) > options.waitTime) {
-				executeAction();
+				executeAction(drawer);
 				time = Date.now();
 			}
 		};
 
-		function executeAction() {
-			if (drawer.steps != null) {
-				const lastStep = drawer.steps[drawer.current - 1]
-				const currentStep = drawer.steps[drawer.current++];
-
-				if (currentStep == null) {
-					// alert('saiu');
-					return;
-				}
-
-				if (lastStep != null)
-					drawer.restore(lastStep.x, lastStep.y);
-
-				drawer.drawPlayer(currentStep.x, currentStep.y);
-			}
-		}
 	};
 
 	new P5(sketch);
 
 	return drawer;
+}
+
+function executeAction(drawer: P5Drawer) {
+	if (drawer.steps != null) {
+		const lastStep = drawer.steps[drawer.current - 1]
+		const currentStep = drawer.steps[drawer.current++];
+		let direction = Direction.Leste;
+
+		if (currentStep == null) {
+			// alert('saiu');
+			return;
+		}
+
+		if (lastStep != null)
+			drawer.restore(lastStep.x, lastStep.y);
+
+		if (currentStep instanceof StepWithDirection)
+			direction = currentStep.direction;
+
+		drawer.drawPlayer(currentStep.x, currentStep.y, direction);
+	}
 }
 
 function clearCanvasHtml() {
