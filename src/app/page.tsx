@@ -34,7 +34,7 @@ export default function Home() {
   useEffect(() => {
     // Client-side-only code
     stopAndClean();
-  }, [mazeName, player]);
+  }, [mazeName, player, maxSteps]);
 
   useEffect(() => {
     options.waitTime = waitTime;
