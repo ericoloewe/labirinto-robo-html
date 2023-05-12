@@ -41,14 +41,18 @@ export class R2D2 implements IPlayer {
 			const hasHandsOnTheWall = this.isWallAtLeft(x, y, direction) || (rotated && this.isWallAtLeft(nextStep.x, nextStep.y, nextStep.direction));
 
 			rotated = false;
-			
+
 			if (canWalk && hasHandsOnTheWall) { // verifica se não é parede a frente, e se ele esta com a mão a esquerda
 				steps.push(nextStep);
-				
+
 				break;
 			} else { //caso for uma parede a frente, ou ele nao estiver com a mao a frente ele faz os seguintes passos
 				rotated = true;
-				direction = this.getLeft(direction);
+				if (this.maze.isWall(nextStep.x, nextStep.y) && this.isWallAtLeft(x, y, direction) && !this.isWallAtRight(x, y, direction))
+					direction = this.getRight(direction);
+				else
+					direction = this.getLeft(direction);
+
 				steps.push(new StepWithDirection(x, y, direction));
 			}
 		}
@@ -73,6 +77,26 @@ export class R2D2 implements IPlayer {
 		return sent;
 	}
 
+	private getRight(direction: Direction) {
+		let sent = Direction.EAST;
+
+		switch (direction) { //verifica o sentido e retorna a direita do robo
+			case Direction.EAST:
+				sent = Direction.SOUTH;
+				break;
+			case Direction.SOUTH:
+				sent = Direction.WEST;
+				break;
+			case Direction.WEST:
+				sent = Direction.NORTH;
+				break;
+			default:
+				break;
+		}
+
+		return sent;
+	}
+
 	private isWallAtLeft(x: number, y: number, direction: Direction) {
 		let ret = false;
 
@@ -88,6 +112,26 @@ export class R2D2 implements IPlayer {
 				break;
 			case Direction.WEST:
 				if (this.maze.isWall(x, y + 1)) ret = true;
+				break;
+		}
+		return ret;
+	}
+
+	private isWallAtRight(x: number, y: number, direction: Direction) {
+		let ret = false;
+
+		switch (direction) { //verifica o sentido e retorna se for parede na esquerda ou nao
+			case Direction.NORTH:
+				if (this.maze.isWall(x + 1, y)) ret = true;
+				break;
+			case Direction.EAST:
+				if (this.maze.isWall(x, y + 1)) ret = true;
+				break;
+			case Direction.SOUTH:
+				if (this.maze.isWall(x - 1, y)) ret = true;
+				break;
+			case Direction.WEST:
+				if (this.maze.isWall(x, y - 1)) ret = true;
 				break;
 		}
 		return ret;
