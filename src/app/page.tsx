@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Options, Players, createMaze } from "./sketch";
 import { Step, StepWithDirection } from "./step";
 import { P5Drawer } from "./p5-drawer";
-import Image from "next/image";
 
 const options: Options = {
   waitTime: 200,
@@ -104,7 +103,7 @@ export default function Home() {
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Loteria{' '}
-            <Image src="./b9.jpg" className="h-8 w-8 inline-block" alt="Robo" />
+            <img src="./b9.jpg" className="h-8 w-8 inline-block" alt="Robo" />
           </h2>
           <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
             Tira na sorte o proximo passo de 0-4.
@@ -116,7 +115,7 @@ export default function Home() {
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
             C3PO{" "}
-            <Image src="./C3PO.jpg" className="h-8 w-8 inline-block" alt="Robo" />
+            <img src="./C3PO.jpg" className="h-8 w-8 inline-block" alt="Robo" />
           </h2>
           <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
             Gira para esquerda se não tiver parede a direita, caso contrario, gira para direita.
@@ -128,7 +127,7 @@ export default function Home() {
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
             R2D2{' '}
-            <Image src="./R2D2.jpg" className="h-8 w-8 inline-block" alt="Robo" />
+            <img src="./R2D2.jpg" className="h-8 w-8 inline-block" alt="Robo" />
           </h2>
           <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
             Sempre anda com a mão esquerda na parede
@@ -140,7 +139,7 @@ export default function Home() {
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Walle{' '}
-            <Image src="./walle.jpg" className="h-8 w-8 inline-block" alt="Robo" />
+            <img src="./walle.jpg" className="h-8 w-8 inline-block" alt="Robo" />
           </h2>
           <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
             Sempre sai do labirinto atraves de um algoritmo de arvore.

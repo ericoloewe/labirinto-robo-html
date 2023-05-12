@@ -16,12 +16,16 @@ export class P5Drawer {
 	}
 
 	public preload() {
-		this.images.brick = this.canvas.loadImage('brick.jpg');
-		this.images.sand = this.canvas.loadImage('sand.jpg');
-		this.images.loteria = this.canvas.loadImage('b9.jpg');
-		this.images.c3po = this.canvas.loadImage('C3PO.jpg');
-		this.images.r2d2 = this.canvas.loadImage('R2D2.jpg');
-		this.images.walle = this.canvas.loadImage('walle.jpg');
+		this.images.brick = this.loadImage('brick.jpg');
+		this.images.sand = this.loadImage('sand.jpg');
+		this.images.loteria = this.loadImage('b9.jpg');
+		this.images.c3po = this.loadImage('C3PO.jpg');
+		this.images.r2d2 = this.loadImage('R2D2.jpg');
+		this.images.walle = this.loadImage('walle.jpg');
+	}
+
+	private loadImage(src: string) {
+		return this.canvas.loadImage(`${process.env.BASE_PATH}/${src}`);
 	}
 
 	public prepare(width: number, height: number) {
