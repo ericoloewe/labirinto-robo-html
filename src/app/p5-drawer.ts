@@ -55,7 +55,7 @@ export class P5Drawer {
 	}
 
 	public drawPlayer(x: number, y: number, direction: Direction) {
-		const player = this.player.constructor.name.toLowerCase();
+		const player = this.player.name.toLowerCase();
 		const realX = x * this.tileSize;
 		const realY = y * this.tileSize;
 

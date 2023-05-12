@@ -3,6 +3,7 @@ import { IPlayer } from "./interfaces";
 import { Direction, Step, StepWithDirection } from "./step";
 
 export class R2D2 implements IPlayer {
+	name: string = "R2D2";
 	initialX: number = 1;
 	initialY: number = 1;
 	maze: Maze;

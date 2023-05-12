@@ -4,6 +4,7 @@ import { Step } from "./step";
 import { PathNode, Tree } from './tree';
 
 export class Walle implements IPlayer {
+	name: string = "Walle";
 	initialX: number = 1;
 	initialY: number = 1;
 	maze: Maze;

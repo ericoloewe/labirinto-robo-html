@@ -3,6 +3,7 @@ import { IPlayer } from "./interfaces";
 import { Direction, Step, StepWithDirection } from "./step";
 
 export class C3PO implements IPlayer {
+	name: string = "C3PO";
 	initialX: number = 1;
 	initialY: number = 1;
 	maze: Maze;

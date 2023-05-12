@@ -4,6 +4,7 @@ import { Step } from "./step";
 import rn from 'random-number';
 
 export class Loteria implements IPlayer {
+	name: string = "Loteria";
 	initialX: number = 1;
 	initialY: number = 1;
 	maze: Maze;
