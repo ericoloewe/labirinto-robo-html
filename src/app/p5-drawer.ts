@@ -100,8 +100,8 @@ export class P5Drawer {
 		}
 	}
 
-	public generateStepsAndDraw() {
-		this.steps = this.player.generateSteps(500);
+	public generateStepsAndDraw(maxSteps: number = 500) {
+		this.steps = this.player.generateSteps(maxSteps);
 	}
 
 	public stopAndRemove() {

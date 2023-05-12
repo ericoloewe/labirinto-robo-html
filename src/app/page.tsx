@@ -15,6 +15,7 @@ export default function Home() {
   const [player, setPlayer] = useState<Players>(Players.LOTERIA);
   const [mazeName, setMazeName] = useState<string>('labirinto');
   const [waitTime, setWaitTime] = useState<number>(250);
+  const [maxSteps, setMaxSteps] = useState<number>(500);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [currentStep, setCurrentStep] = useState<Step>();
 
@@ -43,7 +44,7 @@ export default function Home() {
     stopAndClean();
     createMaze(mazeName, player, options).then(d => {
       drawer = d;
-      drawer?.generateStepsAndDraw();
+      drawer?.generateStepsAndDraw(maxSteps);
     });
   }
 
@@ -81,6 +82,12 @@ export default function Home() {
             <label htmlFor="waitTime" className="block text-sm font-medium leading-6 text-gray-900">Intervalo entre desenhos</label>
             <div className="mt-2">
               <input type="number" name="waitTime" id="waitTime" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={waitTime} placeholder="tempo em ms" onChange={e => setWaitTime(Number(e?.target?.value) || waitTime)} />
+            </div>
+          </div>
+          <div className="sm:col-span-3">
+            <label htmlFor="maxSteps" className="block text-sm font-medium leading-6 text-gray-900">Máximo de passos</label>
+            <div className="mt-2">
+              <input type="number" name="maxSteps" id="maxSteps" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={maxSteps} placeholder="tempo em ms" onChange={e => setMaxSteps(Number(e?.target?.value) || waitTime)} />
             </div>
           </div>
           <div className="sm:col-span-3">
