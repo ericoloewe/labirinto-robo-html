@@ -25,3 +25,8 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.canvas-section canvas {
+  max-width: 100%;
+  height: auto !important;
+}

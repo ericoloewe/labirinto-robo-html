@@ -54,9 +54,9 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen lg:flex-row flex-col items-center justify-between p-24">
-      <section id="canvasSection"></section>
-      <div className="mb-32 flex flex-col text-center lg:mb-0 lg:text-left">
+    <main className="flex min-h-screen lg:flex-row flex-col items-center justify-around p-3 lg:p-24">
+      <section id="canvasSection" className="canvas-section lg:p-6"></section>
+      <div className="mb-32 flex flex-col text-center lg:mb-0 lg:text-left p-3">
         <div className="actions group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30">
           <div className="sm:col-span-3">
             <button type="button" onClick={start} className="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
