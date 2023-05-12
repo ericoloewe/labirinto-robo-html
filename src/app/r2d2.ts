@@ -33,13 +33,21 @@ export class R2D2 implements IPlayer {
 		let i = 0;
 		let lastStep = steps[steps.length - 1];
 		let { direction, x, y } = lastStep;
+		let rotated = false;
 
 		while (3 >= i++ || steps.length < maxSteps) { // loop criado para enquanto não for feito algo, o programa nao saia dessa função
-			if (this.canWalk(x, y, direction) && this.isWallAtLeft(x, y, direction)) { // verifica se não é parede a frente, e se ele esta com a mão a esquerda
-				steps.push(this.getNextStepFor(x, y, direction));
+			const nextStep = this.getNextStepFor(x, y, direction);
+			const canWalk = this.maze.isPath(nextStep.x, nextStep.y) || this.maze.isOut(nextStep.x, nextStep.y);
+			const hasHandsOnTheWall = this.isWallAtLeft(x, y, direction) || (rotated && this.isWallAtLeft(nextStep.x, nextStep.y, nextStep.direction));
 
+			rotated = false;
+			
+			if (canWalk && hasHandsOnTheWall) { // verifica se não é parede a frente, e se ele esta com a mão a esquerda
+				steps.push(nextStep);
+				
 				break;
 			} else { //caso for uma parede a frente, ou ele nao estiver com a mao a frente ele faz os seguintes passos
+				rotated = true;
 				direction = this.getLeft(direction);
 				steps.push(new StepWithDirection(x, y, direction));
 			}
@@ -83,12 +91,6 @@ export class R2D2 implements IPlayer {
 				break;
 		}
 		return ret;
-	}
-
-	private canWalk(x: number, y: number, direction: Direction) { //verifica o sentido e retorna se é possivel caminhar para o mesmo(que a frente nao ha parede)
-		const nextStep = this.getNextStepFor(x, y, direction);
-
-		return this.maze.isPath(nextStep.x, nextStep.y) || this.maze.isOut(nextStep.x, nextStep.y);
 	}
 
 	private getNextStepFor(x: number, y: number, direction: Direction) {
